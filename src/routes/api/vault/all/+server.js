@@ -1,5 +1,5 @@
 import { json, error } from '@sveltejs/kit';
-import { supabase } from '$lib/supabase';
+import { supabase } from '$lib/supabase-api';
 
 // CORS headers
 const corsHeaders = {
