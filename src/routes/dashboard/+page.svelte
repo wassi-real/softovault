@@ -8,13 +8,22 @@
 	import { supabase } from '$lib/supabase.js';
 	import DashboardItemSkeleton from '$lib/components/DashboardItemSkeleton.svelte';
 	import { goto } from '$app/navigation';
+import { profiles } from '$lib/stores/data.js';
+import { getUserLimitsSummary } from '$lib/utils/limits.js';
 
 	let vaults = $state([]);
 	let loading = $state(false);
+	let userProfile = $state(null);
+	let userLimits = $state(null);
 
 	// Subscribe to vaults store for real-time updates
 	vaultsStore.subscribe(value => {
 		vaults = value;
+	});
+
+	// Subscribe to profiles store
+	profiles.subscribe(value => {
+		userProfile = value;
 	});
 
 	// Reactive statement to handle auth state changes
@@ -25,6 +34,16 @@
 				goto(`/confirm-email?email=${encodeURIComponent($auth.user.email)}`);
 				return;
 			}
+			// Load profile and user limits
+			await profiles.load($auth.user.id);
+			userLimits = await getUserLimitsSummary($auth.user.id);
+			
+			// Check if user has a profile, if not redirect to settings
+			if (!userLimits.hasProfile) {
+				goto('/settings');
+				return;
+			}
+			
 			// Load vaults from cache or fetch if needed
 			await vaultsStore.load();
 		} else if (!$auth.loading && !$auth.user) {
@@ -84,6 +103,23 @@
 		<div class="animate-slideIn">
 			<h1 class="text-4xl md:text-5xl font-bold text-white mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Your Vaults</h1>
 			<p class="text-lg text-gray-400">Manage your secure password vaults with ease</p>
+			
+			{#if userLimits}
+				<div class="mt-4 flex items-center gap-4 text-sm">
+					<div class="flex items-center gap-2">
+						<div class="w-2 h-2 rounded-full {userLimits.isPremium ? 'bg-yellow-500' : 'bg-gray-500'}"></div>
+						<span class="text-gray-300">{userLimits.isPremium ? 'Premium' : 'Free'} Account</span>
+					</div>
+					<div class="text-gray-400">
+						Vaults: {userLimits.vaultLimits.currentCount}/{userLimits.vaultLimits.maxAllowed}
+					</div>
+					{#if !userLimits.isPremium}
+						<a href="/settings" class="text-red-400 hover:text-red-300 transition-colors">
+							Upgrade to Premium
+						</a>
+					{/if}
+				</div>
+			{/if}
 		</div>
 
 <style>

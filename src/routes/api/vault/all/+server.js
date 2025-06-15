@@ -1,5 +1,6 @@
-import { json, error } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase-api';
+import { decryptSecrets } from '$lib/utils/encryption.js';
 
 // CORS headers
 const corsHeaders = {
@@ -46,8 +47,8 @@ async function authenticateVault(accessKey) {
 }
 
 // Helper function to get secrets for a vault
-async function getVaultSecrets(vaultId) {
-	const { data: secrets, error: secretsError } = await supabase
+async function getVaultSecrets(vaultId, accessKey) {
+	const { data: encryptedSecrets, error: secretsError } = await supabase
 		.from('secrets')
 		.select('key, value, description, created_at, updated_at')
 		.eq('vault_id', vaultId)
@@ -57,7 +58,14 @@ async function getVaultSecrets(vaultId) {
 		throw error(500, { message: 'Failed to retrieve secrets' });
 	}
 
-	return secrets || [];
+	// Decrypt secrets before returning
+	try {
+		const decryptedSecrets = await decryptSecrets(encryptedSecrets || [], accessKey);
+		return decryptedSecrets;
+	} catch (decryptError) {
+		console.error('Failed to decrypt secrets:', decryptError);
+		throw error(500, { message: 'Failed to decrypt vault secrets' });
+	}
 }
 
 // GET /api/vault/all - Get all secrets
@@ -74,8 +82,8 @@ export async function GET({ request }) {
 		// Authenticate vault
 		const vault = await authenticateVault(accessKey);
 		
-		// Get all secrets for this vault
-		const secrets = await getVaultSecrets(vault.id);
+		// Get all secrets for this vault (decrypted)
+		const secrets = await getVaultSecrets(vault.id, accessKey);
 		
 		// Convert to key-value pairs for SDK compatibility
 		const secretsObject = {};

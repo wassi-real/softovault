@@ -59,7 +59,7 @@ export const auth = {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${window.location.origin}/auth/v1/verify`
         }
       });
       

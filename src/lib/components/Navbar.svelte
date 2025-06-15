@@ -80,7 +80,7 @@
 			<!-- Logo -->
 			<div class="flex items-center">
 				<a href="/" class="flex items-center space-x-3 group transition-all duration-300 hover:scale-105">
-					<img src="/src/lib/assets/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-15 h-15 group-hover:scale-110 transition-transform duration-300" />
+					<img src="/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-15 h-15 group-hover:scale-110 transition-transform duration-300" />
 					<span class="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent group-hover:from-red-400 group-hover:to-red-300 transition-all duration-300">SoftoVault</span>
 				</a>
 			</div>

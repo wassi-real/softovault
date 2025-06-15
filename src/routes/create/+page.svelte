@@ -8,6 +8,8 @@ import { toastStore } from '$lib/stores/toast.js';
 import { supabase } from '$lib/supabase';
 import { vaults as vaultsStore } from '$lib/stores/data.js';
 import { auth } from '$lib/stores/auth.js';
+import { encryptVaultData } from '$lib/utils/encryption.js';
+import { checkVaultLimits } from '$lib/utils/limits.js';
 
 	// Redirect if not authenticated or email not confirmed
 	$effect(() => {
@@ -30,32 +32,87 @@ import { auth } from '$lib/stores/auth.js';
 
 		loading = true;
 
-		const { data: { user } } = await supabase.auth.getUser();
+		try {
+			const { data: { user } } = await supabase.auth.getUser();
 
-		if (!user) {
-			toastStore.show('You must be logged in to create a vault.', 'error');
+			if (!user) {
+				toastStore.show('You must be logged in to create a vault.', 'error');
+				loading = false;
+				goto('/login');
+				return;
+			}
+
+			// Check vault limits and profile requirements
+			const limitCheck = await checkVaultLimits(user.id);
+			if (!limitCheck.canCreate) {
+				toastStore.show(limitCheck.reason, 'error');
+				loading = false;
+				if (limitCheck.reason.includes('profile')) {
+					goto('/settings');
+				}
+				return;
+			}
+
+			// First create the vault to get the access_key
+			const { data: newVault, error: createError } = await supabase
+				.from('vaults')
+				.insert({
+					user_id: user.id,
+					title: 'temp', // Temporary title
+					description: null
+				})
+				.select()
+				.single();
+
+			if (createError) {
+				toastStore.show(createError.message, 'error');
+				loading = false;
+				return;
+			}
+
+			// Now encrypt the vault data using the generated access_key
+			const vaultData = {
+				title: title.trim(),
+				description: description.trim() || null
+			};
+
+			const encryptedVaultData = await encryptVaultData(vaultData, newVault.access_key);
+
+			// Update the vault with encrypted data
+			const { data: updatedVault, error: updateError } = await supabase
+				.from('vaults')
+				.update({
+					title: encryptedVaultData.title,
+					description: encryptedVaultData.description
+				})
+				.eq('id', newVault.id)
+				.select()
+				.single();
+
+			if (updateError) {
+				// Clean up the created vault if encryption fails
+				await supabase.from('vaults').delete().eq('id', newVault.id);
+				toastStore.show('Failed to encrypt vault data: ' + updateError.message, 'error');
+				loading = false;
+				return;
+			}
+
+			// Add the vault to the store with decrypted data for UI
+			const vaultForStore = {
+				...updatedVault,
+				title: vaultData.title,
+				description: vaultData.description
+			};
+			vaultsStore.add(vaultForStore);
+			toastStore.show('Vault created successfully with encryption!', 'success');
+			goto(`/vault/${updatedVault.id}`);
+
+		} catch (error) {
+			console.error('Error creating vault:', error);
+			toastStore.show('Failed to create vault: ' + error.message, 'error');
+		} finally {
 			loading = false;
-			goto('/login');
-			return;
 		}
-
-		const vaultData = {
-			user_id: user.id,
-			title: title.trim(),
-			description: description.trim() || null
-		};
-
-		const { data: newVault, error } = await supabase.from('vaults').insert(vaultData).select().single();
-
-	if (error) {
-		toastStore.show(error.message, 'error');
-		loading = false;
-	} else {
-		// Add the new vault to the store for instant UI updates
-		vaultsStore.add(newVault);
-		toastStore.show('Vault created successfully!', 'success');
-		goto(`/vault/${newVault.id}`);
-	}
 	}
 </script>
 

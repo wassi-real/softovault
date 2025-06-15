@@ -8,7 +8,7 @@
 			<!-- Logo and Description -->
 			<div class="col-span-1 md:col-span-2">
 				<div class="flex items-center space-x-3 mb-4">
-					<img src="/src/lib/assets/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-8 h-8" />
+					<img src="/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-8 h-8" />
 					<span class="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">SoftoVault</span>
 				</div>
 				<p class="text-gray-400 mb-6 max-w-md">
@@ -77,7 +77,7 @@
 		<div class="border-t border-gray-800 mt-12 pt-8">
 			<div class="flex flex-col md:flex-row justify-between items-center">
 				<div class="flex items-center space-x-4 mb-4 md:mb-0">
-					<img src="/src/lib/assets/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-6 h-6" />
+					<img src="/SoftoVaultLogo.png" alt="SoftoVault Logo" class="w-6 h-6" />
 					<p class="text-gray-400 text-sm">
 						© {new Date().getFullYear()} SoftoVault. All rights reserved.
 					</p>

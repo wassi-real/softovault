@@ -8,6 +8,9 @@
 	import { auth } from '$lib/stores/auth.js';
 	import { vaults as vaultsStore } from '$lib/stores/data.js';
 	import { page } from '$app/stores';
+	import { profiles } from '$lib/stores/data.js';
+	import { checkUserProfile } from '$lib/utils/limits.js';
+	import { goto } from '$app/navigation';
 	
 	interface Props {
 		children?: import('svelte').Snippet;
@@ -34,10 +37,20 @@
 	});
 
 	// Preload data when user is authenticated and on relevant routes
-	$effect(() => {
+	$effect(async () => {
 		if ($auth.user && !$auth.loading && !hasPreloaded) {
 			const currentRoute = $page.route.id;
 			if (currentRoute?.includes('dashboard') || currentRoute?.includes('vault') || data.user) {
+				// Check if user has a profile for protected routes
+				if (currentRoute?.includes('dashboard') || currentRoute?.includes('vault') || currentRoute?.includes('create')) {
+					const { hasProfile } = await checkUserProfile($auth.user.id);
+					if (!hasProfile && !currentRoute?.includes('settings')) {
+						// Redirect to settings if no profile exists
+						goto('/settings');
+						return;
+					}
+				}
+				
 				// Preload vaults data for instant navigation
 				vaultsStore.load();
 				hasPreloaded = true;

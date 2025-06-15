@@ -5,6 +5,8 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { auth } from '$lib/stores/auth.js';
+	import { decryptVaultData, decryptSecrets, encryptSecretData } from '$lib/utils/encryption.js';
+import { checkSecretLimits } from '$lib/utils/limits.js';
 
 	import Button from '$lib/components/Button.svelte';
 	import Input from '$lib/components/Input.svelte';
@@ -81,8 +83,18 @@
 				return;
 			}
 
-			vault = vaultResponse.data;
-			console.log('Vault loaded:', vault);
+			const encryptedVault = vaultResponse.data;
+			console.log('Encrypted vault loaded:', encryptedVault);
+
+			// Decrypt vault data using access_key
+			try {
+				vault = await decryptVaultData(encryptedVault, encryptedVault.access_key);
+				console.log('Vault decrypted:', vault);
+			} catch (decryptError) {
+				console.error('Failed to decrypt vault:', decryptError);
+				loadingError = 'Failed to decrypt vault data. The vault may be corrupted.';
+				return;
+			}
 
 			// Handle secrets response
 			if (secretsResponse.error) {
@@ -90,8 +102,18 @@
 				toastStore.show('Failed to load secrets: ' + secretsResponse.error.message, 'error');
 				secrets = [];
 			} else {
-				secrets = secretsResponse.data || [];
-				console.log('Secrets loaded:', secrets.length);
+				const encryptedSecrets = secretsResponse.data || [];
+				console.log('Encrypted secrets loaded:', encryptedSecrets.length);
+				
+				// Decrypt secrets using vault access_key
+				try {
+					secrets = await decryptSecrets(encryptedSecrets, encryptedVault.access_key);
+					console.log('Secrets decrypted:', secrets.length);
+				} catch (decryptError) {
+					console.error('Failed to decrypt secrets:', decryptError);
+					toastStore.show('Some secrets could not be decrypted', 'warning');
+					secrets = [];
+				}
 			}
 
 		} catch (error) {
@@ -166,14 +188,33 @@
 			return;
 		}
 
+		// Check secret limits and profile requirements
+		const limitCheck = await checkSecretLimits($auth.user.id, vault.id);
+		if (!limitCheck.canCreate) {
+			toastStore.show(limitCheck.reason, 'error');
+			if (limitCheck.reason.includes('profile')) {
+				goto('/settings');
+			}
+			return;
+		}
+
 		try {
+			// Encrypt secret data before storing
+			const secretData = {
+				key: newKey.trim(),
+				value: newValue.trim(),
+				description: newDescription.trim() || null
+			};
+
+			const encryptedSecretData = await encryptSecretData(secretData, vault.access_key);
+
 			const { data, error } = await supabase
 				.from('secrets')
 				.insert({
 					vault_id: vault.id,
-					key: newKey.trim(),
-					value: newValue.trim(),
-					description: newDescription.trim() || null
+					key: encryptedSecretData.key,
+					value: encryptedSecretData.value,
+					description: encryptedSecretData.description
 				})
 				.select()
 				.single();
@@ -187,7 +228,14 @@
 				return;
 			}
 
-			secrets = [data, ...secrets];
+			// Add the decrypted version to the UI
+			const decryptedSecret = {
+				...data,
+				key: secretData.key,
+				value: secretData.value,
+				description: secretData.description
+			};
+			secrets = [decryptedSecret, ...secrets];
 			resetForm();
 			toastStore.show('Secret added successfully', 'success');
 		} catch (error) {
@@ -203,11 +251,21 @@
 		}
 
 		try {
+			// Encrypt the updated secret data
+			const secretData = {
+				key: secret.key,
+				value: secret.value.trim(),
+				description: secret.description?.trim() || null
+			};
+
+			const encryptedSecretData = await encryptSecretData(secretData, vault.access_key);
+
 			const { data, error } = await supabase
 				.from('secrets')
 				.update({
-					value: secret.value.trim(),
-					description: secret.description?.trim() || null
+					key: encryptedSecretData.key,
+					value: encryptedSecretData.value,
+					description: encryptedSecretData.description
 				})
 				.eq('id', secret.id)
 				.select()
@@ -218,7 +276,14 @@
 				return;
 			}
 
-			secrets = secrets.map(s => s.id === secret.id ? data : s);
+			// Update the UI with decrypted data
+			const updatedSecret = {
+				...data,
+				key: secretData.key,
+				value: secretData.value,
+				description: secretData.description
+			};
+			secrets = secrets.map(s => s.id === secret.id ? updatedSecret : s);
 			editingSecret = null;
 			toastStore.show('Secret updated successfully', 'success');
 		} catch (error) {
@@ -258,11 +323,19 @@
 		}
 
 		try {
+			// Encrypt vault metadata
+			const vaultData = {
+				title: editVaultTitle.trim(),
+				description: editVaultDescription.trim() || null
+			};
+
+			const encryptedVaultData = await encryptVaultData(vaultData, vault.access_key);
+
 			const { data, error } = await supabase
 				.from('vaults')
 				.update({
-					title: editVaultTitle.trim(),
-					description: editVaultDescription.trim() || null
+					title: encryptedVaultData.title,
+					description: encryptedVaultData.description
 				})
 				.eq('id', vault.id)
 				.eq('user_id', $auth.user.id)
@@ -274,7 +347,12 @@
 				return;
 			}
 
-			vault = data;
+			// Update the UI with decrypted data
+			vault = {
+				...data,
+				title: vaultData.title,
+				description: vaultData.description
+			};
 			showEditVault = false;
 			toastStore.show('Vault updated successfully', 'success');
 		} catch (error) {
@@ -595,7 +673,17 @@
 			</div>
 		{:else}
 			<div class="space-y-4">
-				<h2 class="text-xl font-semibold mb-4">Secrets ({secrets.length})</h2>
+				<div class="flex items-center justify-between mb-4">
+					<h2 class="text-xl font-semibold">Secrets ({secrets.length})</h2>
+					{#await checkSecretLimits($auth.user.id, vault.id) then limitCheck}
+						<div class="text-sm text-gray-400">
+							{limitCheck.currentCount}/{limitCheck.maxAllowed} secrets used
+							{#if !limitCheck.canCreate}
+								<span class="text-red-400 ml-2">(Limit reached)</span>
+							{/if}
+						</div>
+					{/await}
+				</div>
 				{#each secrets as secret (secret.id)}
 					<div class="bg-gray-800 rounded-lg p-6 border border-gray-700 overflow-hidden">
 						{#if editingSecret?.id === secret.id}

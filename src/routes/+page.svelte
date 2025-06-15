@@ -142,6 +142,114 @@
 	</div>
 </div>
 
+<!-- What is SoftoVault Section -->
+<div class="py-32 bg-black">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="text-center mb-16">
+			<h2 class="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+				What is SoftoVault?
+			</h2>
+			<p class="text-xl text-gray-400">
+				A secure, developer-friendly solution for managing sensitive data
+			</p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">🔒 Secure Secret Management</h3>
+				<p class="text-gray-400">
+					Store your API keys, passwords, and sensitive configuration data with military-grade encryption. 
+					Your secrets are encrypted at rest and in transit, ensuring maximum security.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">⚡ Developer-First Experience</h3>
+				<p class="text-gray-400">
+					Built by developers, for developers. Integrate SoftoVault into your applications with our 
+					comprehensive SDK and REST API. Manage secrets programmatically with ease.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">🔄 Environment Variables</h3>
+				<p class="text-gray-400">
+					Seamlessly manage environment variables across different environments. 
+					Keep your development, staging, and production configurations secure and organized.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">🔑 Access Control</h3>
+				<p class="text-gray-400">
+					Fine-grained access control for your secrets. Share access with team members 
+					or external services while maintaining full control over who can access what.
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- FAQ Section -->
+<div class="py-32 bg-black border-t border-gray-800">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="text-center mb-16">
+			<h2 class="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+				Frequently Asked Questions
+			</h2>
+			<p class="text-xl text-gray-400">
+				Everything you need to know about SoftoVault
+			</p>
+		</div>
+
+		<div class="space-y-6">
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">How secure is SoftoVault?</h3>
+				<p class="text-gray-400">
+					SoftoVault uses military-grade encryption to protect your secrets. All data is encrypted at rest 
+					and in transit using AES-256 encryption. We also implement strict access controls and audit logging 
+					to ensure your secrets remain secure.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">How do I integrate SoftoVault with my application?</h3>
+				<p class="text-gray-400">
+					We provide a comprehensive SDK and REST API that makes integration simple. You can use our client 
+					libraries for popular programming languages or make direct API calls. Check out our documentation 
+					for detailed integration guides.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">Can I use SoftoVault for team collaboration? (Coming Soon)</h3>
+				<p class="text-gray-400">
+					Yes! SoftoVault is designed for both individual developers and teams. You can share access to 
+					specific vaults with team members, set up different access levels, and track who accessed what 
+					and when.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">What happens if I lose access to my account?</h3>
+				<p class="text-gray-400">
+					We have a secure account recovery process in place. You can set up backup email addresses and 
+					use two-factor authentication for additional security. Our support team is also available to help 
+					with account recovery.
+				</p>
+			</div>
+
+			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
+				<h3 class="text-xl font-semibold text-white mb-4">Is there a free tier available?</h3>
+				<p class="text-gray-400">
+					Yes! We offer a generous free tier for individual developers and small projects. Check out our 
+					pricing page for detailed information about our plans and features.
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+
 <style>
 	@keyframes gradient {
 		0%, 100% { background-position: 0% 50%; }

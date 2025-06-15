@@ -1,6 +1,7 @@
 import { writable, get } from 'svelte/store';
 import { supabase } from '$lib/supabase';
 import { auth } from './auth.js';
+import { decryptVaultData } from '$lib/utils/encryption.js';
 
 // Cache stores
 const vaultsCache = writable([]);
@@ -37,7 +38,23 @@ export const vaults = {
 			
 			if (error) throw error;
 			
-			const vaultsData = fetchedVaults || [];
+			// Decrypt vault data
+			const vaultsData = [];
+			for (const encryptedVault of fetchedVaults || []) {
+				try {
+					const decryptedVault = await decryptVaultData(encryptedVault, encryptedVault.access_key);
+					vaultsData.push(decryptedVault);
+				} catch (decryptError) {
+					console.error('Failed to decrypt vault:', encryptedVault.id, decryptError);
+					// Keep the encrypted vault but mark it as corrupted
+					vaultsData.push({
+						...encryptedVault,
+						title: '[Encrypted - Cannot Decrypt]',
+						description: 'This vault cannot be decrypted. It may be corrupted.',
+						corrupted: true
+					});
+				}
+			}
 			vaultsCache.set(vaultsData);
 			
 			// Setup realtime subscription for vaults

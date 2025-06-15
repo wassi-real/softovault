@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import { supabase } from '$lib/supabase-api';
+import { decryptSecrets } from '$lib/utils/encryption.js';
 
 // CORS headers
 const corsHeaders = {
@@ -64,28 +65,39 @@ export async function GET({ request, params }) {
 		// Authenticate vault
 		const vault = await authenticateVault(accessKey);
 		
-		// Get specific secret
-		const { data: secret, error: secretError } = await supabase
+		// Get all secrets for this vault (since keys are encrypted, we need to decrypt all to find the match)
+		const { data: encryptedSecrets, error: secretsError } = await supabase
 			.from('secrets')
 			.select('key, value, description, created_at, updated_at')
-			.eq('vault_id', vault.id)
-			.eq('key', secretKey)
-			.single();
+			.eq('vault_id', vault.id);
 
-		if (secretError || !secret) {
-			throw error(404, { message: `Secret with key '${secretKey}' not found` });
+		if (secretsError) {
+			throw error(500, { message: 'Failed to retrieve secrets' });
 		}
 
-		return json({
-			success: true,
-			key: secret.key,
-			value: secret.value,
-			description: secret.description,
-			created_at: secret.created_at,
-			updated_at: secret.updated_at
-		}, {
-			headers: corsHeaders
-		});
+		// Decrypt secrets and find the matching key
+		try {
+			const decryptedSecrets = await decryptSecrets(encryptedSecrets || [], accessKey);
+			const secret = decryptedSecrets.find(s => s.key === secretKey);
+
+			if (!secret) {
+				throw error(404, { message: `Secret with key '${secretKey}' not found` });
+			}
+
+			return json({
+				success: true,
+				key: secret.key,
+				value: secret.value,
+				description: secret.description,
+				created_at: secret.created_at,
+				updated_at: secret.updated_at
+			}, {
+				headers: corsHeaders
+			});
+		} catch (decryptError) {
+			console.error('Failed to decrypt secrets:', decryptError);
+			throw error(500, { message: 'Failed to decrypt vault secrets' });
+		}
 	} catch (err) {
 		console.error('API Error:', err);
 		if (err.status) {
