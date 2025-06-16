@@ -1,5 +1,4 @@
 import { createBrowserClient } from '@supabase/ssr';
-import { browser } from '$app/environment';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -10,7 +9,7 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
 	},
 	cookies: {
 		getAll() {
-			if (!browser) return [];
+			if (typeof document === 'undefined') return [];
 			return document.cookie
 				.split(';')
 				.map(cookie => {
@@ -20,7 +19,7 @@ export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
 				.filter(cookie => cookie.name && cookie.value);
 		},
 		setAll(cookiesToSet) {
-			if (!browser) return;
+			if (typeof document === 'undefined') return;
 			cookiesToSet.forEach(({ name, value, options }) => {
 				const cookieOptions = {
 					path: '/',
