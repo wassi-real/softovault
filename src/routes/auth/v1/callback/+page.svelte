@@ -3,33 +3,61 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast.js';
+	import { page } from '$app/stores';
 
 	let status = $state('processing'); // 'processing', 'success', 'error'
 	let errorMessage = $state('');
 
 	onMount(async () => {
 		try {
-			// First, try to get session from URL hash (OAuth callback)
-			const { data: sessionData, error: sessionError } = await supabase.auth.getSessionFromUrl();
-			
-			if (sessionError) {
-				console.error('OAuth callback error:', sessionError);
+			// Get the authorization code from URL parameters
+			const urlParams = new URLSearchParams(window.location.search);
+			const code = urlParams.get('code');
+			const error = urlParams.get('error');
+			const errorDescription = urlParams.get('error_description');
+
+			// Check for OAuth errors first
+			if (error) {
+				console.error('OAuth error:', error, errorDescription);
 				status = 'error';
-				errorMessage = sessionError.message;
+				errorMessage = errorDescription || error;
+				setTimeout(() => {
+					goto('/login');
+				}, 3000);
 				return;
 			}
 
-			// Check if we got a session from the URL
-			if (sessionData.session) {
-				status = 'success';
-				toastStore.show('Successfully signed in with GitHub!', 'success');
+			// If we have a code, exchange it for a session
+			if (code) {
+				const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
 				
-				// Redirect to dashboard after a brief delay
-				setTimeout(() => {
-					goto('/dashboard');
-				}, 1500);
+				if (exchangeError) {
+					console.error('Code exchange error:', exchangeError);
+					status = 'error';
+					errorMessage = exchangeError.message;
+					setTimeout(() => {
+						goto('/login');
+					}, 3000);
+					return;
+				}
+
+				if (data.session) {
+					status = 'success';
+					toastStore.show('Successfully signed in with GitHub!', 'success');
+					
+					// Redirect to dashboard after a brief delay
+					setTimeout(() => {
+						goto('/dashboard');
+					}, 1500);
+				} else {
+					status = 'error';
+					errorMessage = 'Failed to establish session. Please try again.';
+					setTimeout(() => {
+						goto('/login');
+					}, 3000);
+				}
 			} else {
-				// If no session from URL, check if there's already an active session
+				// No code parameter, check if there's already an active session
 				const { data: currentSession } = await supabase.auth.getSession();
 				
 				if (currentSession.session) {
@@ -41,7 +69,7 @@
 				} else {
 					// No session found anywhere, redirect to login
 					status = 'error';
-					errorMessage = 'No session found. Please try signing in again.';
+					errorMessage = 'No authorization code found. Please try signing in again.';
 					
 					setTimeout(() => {
 						goto('/login');
