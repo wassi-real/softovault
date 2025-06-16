@@ -18,12 +18,10 @@
 	let email = $state('');
 	let premium = $state(false);
 
-	// Redirect if not authenticated or email not confirmed
+	// Redirect if not authenticated
 	$effect(() => {
 		if (!$auth.loading && !$auth.user) {
 			goto('/login');
-		} else if (!$auth.loading && $auth.user && !$auth.user.email_confirmed_at) {
-			goto(`/confirm-email?email=${encodeURIComponent($auth.user.email)}`);
 		}
 	});
 

@@ -52,67 +52,20 @@ export const auth = {
     }
   },
   
-  // Sign up with email and password
-  signUp: async (email, password) => {
+  // Sign in with GitHub
+  signInWithGitHub: async () => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/v1/verify`
+          redirectTo: `${window.location.origin}/dashboard`
         }
       });
       
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error signing up:', error);
-      throw error;
-    }
-  },
-  
-  // Sign in with email and password
-  signIn: async (email, password) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error signing in:', error);
-      throw error;
-    }
-  },
-
-  // Send password reset email
-  resetPassword: async (email) => {
-    try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`
-      });
-      
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error sending password reset email:', error);
-      throw error;
-    }
-  },
-
-  // Update password with new password
-  updatePassword: async (newPassword) => {
-    try {
-      const { data, error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating password:', error);
+      console.error('Error signing in with GitHub:', error);
       throw error;
     }
   },

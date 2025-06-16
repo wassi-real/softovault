@@ -29,11 +29,6 @@ import { getUserLimitsSummary } from '$lib/utils/limits.js';
 	// Reactive statement to handle auth state changes
 	$effect(async () => {
 		if (!$auth.loading && $auth.user) {
-			// Check if email is confirmed
-			if (!$auth.user.email_confirmed_at) {
-				goto(`/confirm-email?email=${encodeURIComponent($auth.user.email)}`);
-				return;
-			}
 			// Load profile and user limits
 			await profiles.load($auth.user.id);
 			userLimits = await getUserLimitsSummary($auth.user.id);

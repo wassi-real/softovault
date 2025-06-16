@@ -40,10 +40,6 @@ import { checkSecretLimits } from '$lib/utils/limits.js';
 		goto('/login');
 	}
 
-	$: if (!$auth.loading && $auth.user && !$auth.user.email_confirmed_at) {
-		goto(`/confirm-email?email=${encodeURIComponent($auth.user.email)}`);
-	}
-
 	// Main data loading function
 	async function loadVaultData() {
 		if (!$auth.user || !vaultId) {
