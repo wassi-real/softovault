@@ -177,9 +177,9 @@
 						please contact us:
 					</p>
 					<div class="space-y-2 text-gray-400">
-						<p><strong>Email:</strong> privacy@softovault.com</p>
-						<p><strong>Address:</strong> SoftoVault Inc., 123 Security Street, Privacy City, PC 12345</p>
-						<p><strong>Data Protection Officer:</strong> dpo@softovault.com</p>
+						<p><strong>Email:</strong> support@softovault.com</p>
+						<!-- <p><strong>Address:</strong> SoftoVault Inc., 123 Security Street, Privacy City, PC 12345</p> -->
+						<!-- <p><strong>Data Protection Officer:</strong> dpo@softovault.com</p> -->
 					</div>
 					<p class="text-gray-400 mt-4">
 						We will respond to your inquiry within 30 days.

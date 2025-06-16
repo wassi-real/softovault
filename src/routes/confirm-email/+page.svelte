@@ -11,11 +11,25 @@
 	let resendLoading = $state(false);
 	let resendCooldown = $state(0);
 	let intervalId;
+	let isVerified = $state(false);
 
 	onMount(() => {
 		// Get email from URL params or auth store
 		const urlParams = new URLSearchParams(window.location.search);
 		email = urlParams.get('email') || '';
+		isVerified = urlParams.get('verified') === 'true';
+		
+		// If verified, show success message and redirect after delay
+		if (isVerified) {
+			toastStore.add({
+				type: 'success',
+				message: 'Email verified successfully! Redirecting to dashboard...'
+			});
+			setTimeout(() => {
+				goto('/dashboard');
+			}, 2000);
+			return;
+		}
 
 		// Check if user is already confirmed
 		const unsubscribe = auth.subscribe(({ user, loading }) => {
@@ -85,66 +99,95 @@
 </svelte:head>
 
 <div class="max-w-md mx-auto px-4 py-16">
-	<div class="text-center mb-8">
-		<div class="bg-blue-500/10 border border-blue-500/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
-			<Mail class="w-8 h-8 text-blue-400" />
+	{#if isVerified}
+		<div class="text-center mb-8">
+			<div class="bg-green-500/10 border border-green-500/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+				<CheckCircle class="w-8 h-8 text-green-400" />
+			</div>
+			<h1 class="text-3xl font-bold mb-2 text-green-400">Email Verified!</h1>
+			<p class="text-gray-400 mb-6">
+				Your email has been successfully verified. You will be redirected to your dashboard shortly.
+			</p>
 		</div>
-		<h1 class="text-3xl font-bold mb-2">Check Your Email</h1>
-		<p class="text-gray-400 mb-6">
-			We've sent a confirmation link to
-			{#if email}
-				<span class="text-white font-medium">{email}</span>
-			{:else}
-				your email address
-			{/if}
-		</p>
-	</div>
-
-	<div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">
-		<div class="flex items-start space-x-3 mb-4">
-			<CheckCircle class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
-			<div>
-				<h3 class="font-medium text-white mb-1">Click the confirmation link</h3>
-				<p class="text-sm text-gray-400">Open the email and click the confirmation link to verify your account.</p>
+		
+		<div class="bg-green-500/10 border border-green-500/20 rounded-lg p-6 mb-6">
+			<div class="flex items-center space-x-3">
+				<CheckCircle class="w-5 h-5 text-green-400 flex-shrink-0" />
+				<div>
+					<h3 class="font-medium text-white mb-1">Verification Complete</h3>
+					<p class="text-sm text-gray-400">You can now access all features of SoftoVault.</p>
+				</div>
 			</div>
 		</div>
-		<div class="flex items-start space-x-3">
-			<Clock class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
-			<div>
-				<h3 class="font-medium text-white mb-1">Access your dashboard</h3>
-				<p class="text-sm text-gray-400">Once confirmed, you'll be automatically redirected to your dashboard.</p>
+		
+		<Button 
+			on:click={() => goto('/dashboard')}
+			class="w-full"
+		>
+			Go to Dashboard
+		</Button>
+	{:else}
+		<div class="text-center mb-8">
+			<div class="bg-blue-500/10 border border-blue-500/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+				<Mail class="w-8 h-8 text-blue-400" />
+			</div>
+			<h1 class="text-3xl font-bold mb-2">Check Your Email</h1>
+			<p class="text-gray-400 mb-6">
+				We've sent a confirmation link to
+				{#if email}
+					<span class="text-white font-medium">{email}</span>
+				{:else}
+					your email address
+				{/if}
+			</p>
+		</div>
+
+		<div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 mb-6">
+			<div class="flex items-start space-x-3 mb-4">
+				<CheckCircle class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+				<div>
+					<h3 class="font-medium text-white mb-1">Click the confirmation link</h3>
+					<p class="text-sm text-gray-400">Open the email and click the confirmation link to verify your account.</p>
+				</div>
+			</div>
+			<div class="flex items-start space-x-3">
+				<Clock class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" />
+				<div>
+					<h3 class="font-medium text-white mb-1">Access your dashboard</h3>
+					<p class="text-sm text-gray-400">Once confirmed, you'll be automatically redirected to your dashboard.</p>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="space-y-4">
-		<Button 
-			on:click={resendConfirmation}
-			disabled={resendLoading || resendCooldown > 0 || !email}
-			variant="outline"
-			class="w-full"
-		>
-			{#if resendLoading}
-				Sending...
-			{:else if resendCooldown > 0}
-				Resend in {resendCooldown}s
-			{:else}
-				Resend Confirmation Email
-			{/if}
-		</Button>
+		<div class="space-y-4">
+			<Button 
+				on:click={resendConfirmation}
+				disabled={resendLoading || resendCooldown > 0 || !email}
+				variant="outline"
+				class="w-full"
+			>
+				{#if resendLoading}
+					Sending...
+				{:else if resendCooldown > 0}
+					Resend in {resendCooldown}s
+				{:else}
+					Resend Confirmation Email
+				{/if}
+			</Button>
 
-		<Button 
-			on:click={goToLogin}
-			variant="ghost"
-			class="w-full"
-		>
-			Back to Login
-		</Button>
-	</div>
+			<Button 
+				on:click={goToLogin}
+				variant="ghost"
+				class="w-full"
+			>
+				Back to Login
+			</Button>
+		</div>
 
-	<div class="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-		<p class="text-sm text-yellow-400">
-			<strong>Didn't receive the email?</strong> Check your spam folder or try resending the confirmation email.
-		</p>
-	</div>
+		<div class="mt-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+			<p class="text-sm text-yellow-400">
+				<strong>Didn't receive the email?</strong> Check your spam folder or try resending the confirmation email.
+			</p>
+		</div>
+	{/if}
 </div>

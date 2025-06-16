@@ -15,7 +15,7 @@
 					Secure, simple, and developer-friendly secret management. Protect your sensitive data with military-grade encryption.
 				</p>
 				<div class="flex space-x-4">
-					<a href="https://github.com/softovault" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
+					<a href="https://github.com/wassi-real/softovault" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
 						<Github class="w-6 h-6" />
 					</a>
 					<a href="https://twitter.com/softovault" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors duration-300">
@@ -44,9 +44,9 @@
 					<li>
 						<a href="/sdk" class="text-gray-400 hover:text-white transition-colors duration-300">SDK & API</a>
 					</li>
-					<li>
+					<!-- <li>
 						<a href="/about" class="text-gray-400 hover:text-white transition-colors duration-300">About</a>
-					</li>
+					</li> -->
 					<li>
 						<a href="/dashboard" class="text-gray-400 hover:text-white transition-colors duration-300">Dashboard</a>
 					</li>
@@ -63,12 +63,12 @@
 					<li>
 						<a href="/terms-of-service" class="text-gray-400 hover:text-white transition-colors duration-300">Terms of Service</a>
 					</li>
-					<li>
+					<!-- <li>
 						<a href="/security" class="text-gray-400 hover:text-white transition-colors duration-300">Security</a>
-					</li>
-					<li>
+					</li> -->
+					<!-- <li>
 						<a href="/contact" class="text-gray-400 hover:text-white transition-colors duration-300">Contact</a>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 		</div>

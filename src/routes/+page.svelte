@@ -28,10 +28,10 @@
 
 <div 
 	bind:this={heroRef}
-	class="relative flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 overflow-hidden"
+	class="relative flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 lg:px-8 overflow-hidden"
 >
 	<!-- Enhanced Animated Background Grid -->
-	<div class="absolute inset-0 opacity-80">
+	<div class="absolute inset-0 opacity-60 md:opacity-80">
 		<div class="absolute inset-0 bg-gradient-to-br from-red-500/15 via-purple-500/5 to-red-600/15 animate-gradient-shift"></div>
 		<svg class="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
 			<defs>
@@ -51,9 +51,9 @@
 
 	<!-- Floating Particles -->
 	<div class="absolute inset-0 overflow-hidden pointer-events-none">
-		{#each Array(20) as _, i}
+		{#each Array(15) as _, i}
 			<div 
-				class="absolute w-1 h-1 bg-red-500/30 rounded-full animate-float"
+				class="absolute w-1 h-1 bg-red-500/30 rounded-full animate-float hidden md:block"
 				style="
 					left: {Math.random() * 100}%; 
 					top: {Math.random() * 100}%; 
@@ -66,12 +66,12 @@
 
 	<!-- Main Content -->
 	<div 
-		class="relative z-10 text-center max-w-5xl mx-auto transform transition-transform duration-300 ease-out"
-		style="transform: perspective(1000px) rotateX({mouseY * 2}deg) rotateY({mouseX * 2}deg)"
+		class="relative z-10 text-center max-w-6xl mx-auto w-full"
+		style="transform: perspective(1000px) rotateX({mouseY * 1}deg) rotateY({mouseX * 1}deg)"
 	>
-		<!-- Main Title -->
-		<!-- <div class="mb-8">
-			<h1 class="text-6xl md:text-8xl lg:text-9xl font-black mb-4 leading-none">
+		<!-- Brand Logo/Title -->
+		<!-- <div class="mb-8 md:mb-12">
+			<h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 leading-none">
 				<span class="inline-block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent animate-gradient bg-300p hover:scale-105 transition-transform duration-500">
 					Softo
 				</span>
@@ -79,22 +79,24 @@
 					Vault
 				</span>
 			</h1>
-			<div class="h-1 w-32 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full animate-pulse"></div>
+			<div class="h-1 w-24 md:w-32 bg-gradient-to-r from-red-500 to-red-600 mx-auto rounded-full animate-pulse"></div>
 		</div> -->
 		
 		<!-- Subtitle -->
-		<p class="text-2xl md:text-4xl lg:text-5xl text-gray-200 mb-8 leading-tight font-light tracking-wide">
-			<span class="inline-block animate-fade-in-up" style="animation-delay: 0.2s">
-				Secure environment without
-			</span>
+		<div class="mb-8 md:mb-12">
 			<br>
-			<span class="inline-block bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent font-semibold animate-fade-in-up" style="animation-delay: 0.4s">
-				exposed secrets
-			</span>
-		</p>
+			<p class="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-gray-200 leading-tight font-light tracking-wide">
+				<span class="block animate-fade-in-up" style="animation-delay: 0.2s">
+					Secure environment without
+				</span>
+				<span class="block bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent font-semibold animate-fade-in-up mt-2" style="animation-delay: 0.4s">
+					exposed secrets
+				</span>
+			</p>
+		</div>
 		
 		<!-- Description -->
-		<p class="text-lg md:text-xl lg:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style="animation-delay: 0.6s">
+		<p class="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 mb-8 md:mb-12 max-w-4xl mx-auto leading-relaxed animate-fade-in-up px-4" style="animation-delay: 0.6s">
 			Manage your 
 			<span class="text-red-400 font-medium">API keys</span>, 
 			<span class="text-red-400 font-medium">environment variables</span>, 
@@ -104,11 +106,11 @@
 		</p>
 		
 		<!-- CTA Buttons -->
-		<div class="flex flex-col sm:flex-row gap-6 justify-center items-center animate-fade-in-up" style="animation-delay: 0.8s">
+		<div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center animate-fade-in-up mb-12 md:mb-16" style="animation-delay: 0.8s">
 			<Button 
 				variant="primary" 
 				size="xl"
-				class="text-xl px-12 py-4 shadow-2xl shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105 transition-all duration-300 transform hover:-translate-y-1"
+				class="w-full sm:w-auto text-lg md:text-xl px-8 md:px-12 py-3 md:py-4 shadow-2xl shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105 transition-all duration-300 transform hover:-translate-y-1"
 				onclick={() => goto('/create')}
 			>
 				🚀 Start Your Vault
@@ -117,7 +119,7 @@
 			<Button 
 				variant="outline" 
 				size="xl"
-				class="text-xl px-12 py-4 border-2 border-gray-600 hover:border-red-500 hover:scale-105 transition-all duration-300 transform hover:-translate-y-1"
+				class="w-full sm:w-auto text-lg md:text-xl px-8 md:px-12 py-3 md:py-4 border-2 border-gray-600 hover:border-red-500 hover:scale-105 transition-all duration-300 transform hover:-translate-y-1"
 				onclick={() => goto('/login')}
 			>
 				🔐 Login
@@ -125,70 +127,152 @@
 		</div>
 
 		<!-- Stats/Features -->
-		<div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto animate-fade-in-up" style="animation-delay: 1s">
-			<div class="text-center p-6 bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105">
-				<div class="text-3xl md:text-4xl font-bold text-red-500 mb-2">🔐</div>
-				<div class="text-gray-400">No Hardcoded Secrets</div>
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto animate-fade-in-up" style="animation-delay: 1s">
+			<div class="text-center p-4 md:p-6 bg-gray-900/40 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105 group">
+				<div class="text-2xl md:text-3xl lg:text-4xl font-bold text-red-500 mb-2 group-hover:scale-110 transition-transform duration-300">🔐</div>
+				<div class="text-sm md:text-base text-gray-400 font-medium">No Hardcoded Secrets</div>
 			</div>
-			<div class="text-center p-6 bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105">
-				<div class="text-3xl md:text-4xl font-bold text-red-500 mb-2">⚡</div>
-				<div class="text-gray-400">Environment Variables</div>
+			<div class="text-center p-4 md:p-6 bg-gray-900/40 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105 group">
+				<div class="text-2xl md:text-3xl lg:text-4xl font-bold text-red-500 mb-2 group-hover:scale-110 transition-transform duration-300">⚡</div>
+				<div class="text-sm md:text-base text-gray-400 font-medium">Environment Variables</div>
 			</div>
-			<div class="text-center p-6 bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105">
-				<div class="text-3xl md:text-4xl font-bold text-red-500 mb-2">🛡️</div>
-				<div class="text-gray-400">Secure by Design</div>
+			<div class="text-center p-4 md:p-6 bg-gray-900/40 backdrop-blur-sm rounded-xl md:rounded-2xl border border-gray-800 hover:border-red-500/50 transition-all duration-300 hover:scale-105 group sm:col-span-2 lg:col-span-1">
+				<div class="text-2xl md:text-3xl lg:text-4xl font-bold text-red-500 mb-2 group-hover:scale-110 transition-transform duration-300">🛡️</div>
+				<div class="text-sm md:text-base text-gray-400 font-medium">Secure by Design</div>
 			</div>
 		</div>
 	</div>
+	<br>
 </div>
 
 <!-- What is SoftoVault Section -->
-<div class="py-32 bg-black">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="text-center mb-16">
-			<h2 class="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-				What is SoftoVault?
+<section class="py-16 md:py-24 lg:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-900 via-gray-900 to-black relative overflow-hidden">
+	<!-- Background Elements -->
+	<div class="absolute inset-0 opacity-30">
+		<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+		<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+	</div>
+
+	<div class="max-w-7xl mx-auto relative z-10">
+		<!-- Section Header -->
+		<div class="text-center mb-12 md:mb-20">
+			<div class="inline-flex items-center justify-center px-4 py-2 bg-red-500/10 border border-red-500/20 rounded-full mb-6">
+				<span class="text-red-400 text-sm font-medium">✨ Features Overview</span>
+			</div>
+			<h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+				<span class="bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+					What is 
+				</span>
+				<span class="bg-gradient-to-r from-red-400 via-red-500 to-red-600 bg-clip-text text-transparent">
+					SoftoVault?
+				</span>
 			</h2>
-			<p class="text-xl text-gray-400">
-				A secure, developer-friendly solution for managing sensitive data
+			<p class="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+				A modern, secure solution for managing sensitive data without exposing it in your codebase. 
+				<span class="text-red-400 font-medium">Built for developers who care about security.</span>
 			</p>
 		</div>
 
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
-				<h3 class="text-xl font-semibold text-white mb-4">🔒 Secure Secret Management</h3>
-				<p class="text-gray-400">
-					Store your API keys, passwords, and sensitive configuration data with military-grade encryption. 
-					Your secrets are encrypted at rest and in transit, ensuring maximum security.
+		<!-- Features Grid -->
+		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+			<!-- Feature Card 1 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">🔐</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Secure Storage</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Store API keys, database credentials, and sensitive configurations with enterprise-grade encryption and zero-knowledge architecture.
 				</p>
 			</div>
 
-			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
-				<h3 class="text-xl font-semibold text-white mb-4">⚡ Developer-First Experience</h3>
-				<p class="text-gray-400">
-					Built by developers, for developers. Integrate SoftoVault into your applications with our 
-					comprehensive SDK and REST API. Manage secrets programmatically with ease.
+			<!-- Feature Card 2 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">⚡</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Easy Integration</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Seamlessly integrate with your existing workflow. Simple REST API, SDKs for popular languages, and no complex setup required.
 				</p>
 			</div>
 
-			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
-				<h3 class="text-xl font-semibold text-white mb-4">🔄 Environment Variables</h3>
-				<p class="text-gray-400">
-					Seamlessly manage environment variables across different environments. 
-					Keep your development, staging, and production configurations secure and organized.
+			<!-- Feature Card 3 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">🛡️</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Zero Trust Security</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Built with zero-trust architecture. End-to-end encryption ensures your secrets are never exposed in plain text, even to us.
 				</p>
 			</div>
 
-			<div class="bg-gray-900/30 backdrop-blur-sm rounded-2xl border border-gray-800 p-8 hover:border-red-500/50 transition-all duration-300">
-				<h3 class="text-xl font-semibold text-white mb-4">🔑 Access Control</h3>
-				<p class="text-gray-400">
-					Fine-grained access control for your secrets. Share access with team members 
-					or external services while maintaining full control over who can access what.
+			<!-- Feature Card 4 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">🚀</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Developer Experience</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Designed by developers, for developers. Intuitive dashboard, comprehensive documentation, and powerful CLI tools.
+				</p>
+			</div>
+
+			<!-- Feature Card 5 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">🌐</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Cloud Native</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Built for modern cloud environments. Auto-scaling infrastructure that grows with your application needs.
+				</p>
+			</div>
+
+			<!-- Feature Card 6 -->
+			<div class="group bg-gradient-to-br from-gray-800/60 to-gray-900/60 backdrop-blur-sm p-6 md:p-8 rounded-2xl border border-gray-700/50 hover:border-red-500/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-red-500/10">
+				<div class="flex items-center justify-center w-16 h-16 bg-red-500/10 rounded-2xl mb-6 group-hover:bg-red-500/20 transition-colors duration-300">
+					<span class="text-3xl group-hover:scale-110 transition-transform duration-300">📊</span>
+				</div>
+				<h3 class="text-xl md:text-2xl font-bold text-white mb-4 group-hover:text-red-400 transition-colors duration-300">Advanced Analytics</h3>
+				<p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+					Real-time monitoring, access logs, usage analytics, and intelligent alerts for suspicious activity patterns.
 				</p>
 			</div>
 		</div>
+
+		<!-- Call to Action -->
+		<div class="text-center mt-16 md:mt-20">
+			<div class="bg-gradient-to-r from-gray-800/50 to-gray-900/50 backdrop-blur-sm p-8 md:p-12 rounded-3xl border border-gray-700/50 max-w-4xl mx-auto">
+				<h3 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
+					Ready to secure your secrets?
+				</h3>
+				<p class="text-lg md:text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
+					Join thousands of developers who trust SoftoVault to keep their sensitive data safe.
+				</p>
+				<div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+					<Button 
+						variant="primary" 
+						size="lg"
+						class="w-full sm:w-auto text-lg px-8 py-3 shadow-xl shadow-red-500/25 hover:shadow-red-500/40 hover:scale-105 transition-all duration-300"
+						onclick={() => goto('/create')}
+					>
+						🚀 Get Started Free
+					</Button>
+					<Button 
+						variant="outline" 
+						size="lg"
+						class="w-full sm:w-auto text-lg px-8 py-3 border-2 border-gray-600 hover:border-red-500 hover:scale-105 transition-all duration-300"
+						onclick={() => goto('/login')}
+					>
+						📖 View Documentation
+					</Button>
+				</div>
+			</div>
+		</div>
 	</div>
-</div>
+</section>
 
 <!-- FAQ Section -->
 <div class="py-32 bg-black border-t border-gray-800">

@@ -123,7 +123,7 @@
 						<li>Free plans are subject to usage limits and feature restrictions</li>
 						<li>Paid plans are billed monthly or annually in advance</li>
 						<li>All fees are non-refundable except as required by law</li>
-						<li>We offer a 30-day money-back guarantee for new paid subscriptions</li>
+						<li>We do not offer any refund for new paid subscriptions</li>
 					</ul>
 
 					<h3 class="text-lg font-semibold text-white mt-6">Payment Terms</h3>
@@ -239,9 +239,9 @@
 						If you have any questions about these Terms of Service, please contact us:
 					</p>
 					<div class="space-y-2 text-gray-400">
-						<p><strong>Email:</strong> legal@softovault.com</p>
-						<p><strong>Address:</strong> SoftoVault Inc., 123 Security Street, Privacy City, PC 12345</p>
-						<p><strong>Support:</strong> support@softovault.com</p>
+						<p><strong>Email:</strong> support@softovault.com</p>
+						<!-- <p><strong>Address:</strong> SoftoVault Inc., 123 Security Street, Privacy City, PC 12345</p>
+						<p><strong>Support:</strong> support@softovault.com</p> -->
 					</div>
 					<p class="text-gray-400 mt-4">
 						These Terms of Service are effective as of the date listed above and will remain 
