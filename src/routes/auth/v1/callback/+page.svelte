@@ -9,18 +9,18 @@
 
 	onMount(async () => {
 		try {
-			// Handle the OAuth callback by extracting session from URL
-			const { data, error } = await supabase.auth.getSession();
+			// First, try to get session from URL hash (OAuth callback)
+			const { data: sessionData, error: sessionError } = await supabase.auth.getSessionFromUrl();
 			
-			if (error) {
-				console.error('OAuth callback error:', error);
+			if (sessionError) {
+				console.error('OAuth callback error:', sessionError);
 				status = 'error';
-				errorMessage = error.message;
+				errorMessage = sessionError.message;
 				return;
 			}
 
-			// Check if we have a session
-			if (data.session) {
+			// Check if we got a session from the URL
+			if (sessionData.session) {
 				status = 'success';
 				toastStore.show('Successfully signed in with GitHub!', 'success');
 				
@@ -29,13 +29,24 @@
 					goto('/dashboard');
 				}, 1500);
 			} else {
-				// No session found, redirect to login
-				status = 'error';
-				errorMessage = 'No session found. Please try signing in again.';
+				// If no session from URL, check if there's already an active session
+				const { data: currentSession } = await supabase.auth.getSession();
 				
-				setTimeout(() => {
-					goto('/login');
-				}, 3000);
+				if (currentSession.session) {
+					status = 'success';
+					toastStore.show('Already signed in!', 'success');
+					setTimeout(() => {
+						goto('/dashboard');
+					}, 1500);
+				} else {
+					// No session found anywhere, redirect to login
+					status = 'error';
+					errorMessage = 'No session found. Please try signing in again.';
+					
+					setTimeout(() => {
+						goto('/login');
+					}, 3000);
+				}
 			}
 		} catch (err) {
 			console.error('Unexpected error during OAuth callback:', err);
