@@ -4,8 +4,10 @@
 	import { toastStore } from '$lib/stores/toast.js';
 	import { auth } from '$lib/stores/auth.js';
 	import { goto } from '$app/navigation';
-	import { Github } from 'lucide-svelte';
 
+	let email = $state('');
+	let password = $state('');
+	let confirmPassword = $state('');
 	let loading = $state(false);
 
 	onMount(() => {
@@ -24,13 +26,29 @@
 		};
 	});
 
-	async function handleGitHubSignup() {
+	async function handleSignUp() {
+		if (!email || !password || !confirmPassword) {
+			toastStore.show('Please fill in all fields', 'error');
+			return;
+		}
+
+		if (password !== confirmPassword) {
+			toastStore.show('Passwords do not match', 'error');
+			return;
+		}
+
+		if (password.length < 6) {
+			toastStore.show('Password must be at least 6 characters', 'error');
+			return;
+		}
+
 		loading = true;
 		try {
-			await auth.signInWithGitHub();
-			// The redirect will be handled by Supabase
+			await auth.signUp(email, password);
+			toastStore.show('Account created successfully!', 'success');
+			goto('/dashboard');
 		} catch (error) {
-			toastStore.show(error.message || 'GitHub signup failed', 'error');
+			toastStore.show(error.message || 'Sign up failed', 'error');
 			loading = false;
 		}
 	}
@@ -39,32 +57,76 @@
 <div class="max-w-md mx-auto px-4 py-16">
 	<div class="text-center mb-8">
 		<h1 class="text-3xl font-bold mb-2">Join SoftoVault</h1>
-		<p class="text-gray-400">Sign up with GitHub to start creating vaults</p>
+		<p class="text-gray-400">Create your account</p>
 	</div>
 
-	<div class="space-y-6">
+	<form on:submit|preventDefault={handleSignUp} class="space-y-6">
+		<div>
+			<label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+				Email
+			</label>
+			<input
+				id="email"
+				type="email"
+				bind:value={email}
+				class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+				placeholder="Enter your email"
+				required
+				disabled={loading}
+			/>
+		</div>
+
+		<div>
+			<label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+				Password
+			</label>
+			<input
+				id="password"
+				type="password"
+				bind:value={password}
+				class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+				placeholder="Enter your password"
+				required
+				disabled={loading}
+			/>
+		</div>
+
+		<div>
+			<label for="confirmPassword" class="block text-sm font-medium text-gray-300 mb-2">
+				Confirm Password
+			</label>
+			<input
+				id="confirmPassword"
+				type="password"
+				bind:value={confirmPassword}
+				class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+				placeholder="Confirm your password"
+				required
+				disabled={loading}
+			/>
+		</div>
+
 		<Button 
-			onclick={handleGitHubSignup}
+			type="submit"
 			variant="primary" 
 			size="lg" 
-			class="w-full flex items-center justify-center gap-3"
+			class="w-full"
 			disabled={loading}
 		>
-			<Github class="w-5 h-5" />
-			{loading ? 'Signing up...' : 'Continue with GitHub'}
+			{loading ? 'Creating account...' : 'Create Account'}
 		</Button>
-	</div>
+	</form>
 
-	<div class="text-center mt-8">
+	<div class="text-center mt-6">
 		<p class="text-gray-400">
-			Already have an account? 
-			<a href="/login" class="text-red-400 hover:text-red-300">Sign in</a>
+			Already have an account?
+			<a href="/login" class="text-red-500 hover:text-red-400 ml-1">Sign in</a>
 		</p>
 	</div>
 
-	<div class="text-center mt-4">
+	<div class="text-center mt-8">
 		<p class="text-sm text-gray-500">
-			By signing up, you agree to our terms of service and privacy policy.
+			By creating an account, you agree to our terms of service and privacy policy.
 		</p>
 	</div>
 </div>

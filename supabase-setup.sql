@@ -31,6 +31,7 @@ CREATE TABLE public.profiles (
     user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     username TEXT NOT NULL UNIQUE,
     bio TEXT,
+    premium BOOLEAN DEFAULT false NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', now()) NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', now()) NOT NULL
 );

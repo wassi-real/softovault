@@ -52,20 +52,37 @@ export const auth = {
     }
   },
   
-  // Sign in with GitHub
-  signInWithGitHub: async () => {
+  // Sign in with email and password
+  signIn: async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error signing in:', error);
+      throw error;
+    }
+  },
+
+  // Sign up with email and password
+  signUp: async (email, password) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
         options: {
-          redirectTo: `${window.location.origin}/auth/v1/callback`
+          emailRedirectTo: undefined // Disable email confirmation
         }
       });
       
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error signing in with GitHub:', error);
+      console.error('Error signing up:', error);
       throw error;
     }
   },

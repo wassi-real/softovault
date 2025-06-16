@@ -4,8 +4,9 @@
 	import { toastStore } from '$lib/stores/toast.js';
 	import { auth } from '$lib/stores/auth.js';
 	import { goto } from '$app/navigation';
-	import { Github } from 'lucide-svelte';
 
+	let email = $state('');
+	let password = $state('');
 	let loading = $state(false);
 
 	onMount(() => {
@@ -24,13 +25,19 @@
 		};
 	});
 
-	async function handleGitHubLogin() {
+	async function handleLogin() {
+		if (!email || !password) {
+			toastStore.show('Please fill in all fields', 'error');
+			return;
+		}
+
 		loading = true;
 		try {
-			await auth.signInWithGitHub();
-			// The redirect will be handled by Supabase
+			await auth.signIn(email, password);
+			toastStore.show('Successfully signed in!', 'success');
+			goto('/dashboard');
 		} catch (error) {
-			toastStore.show(error.message || 'GitHub login failed', 'error');
+			toastStore.show(error.message || 'Login failed', 'error');
 			loading = false;
 		}
 	}
@@ -39,20 +46,56 @@
 <div class="max-w-md mx-auto px-4 py-16">
 	<div class="text-center mb-8">
 		<h1 class="text-3xl font-bold mb-2">Welcome to SoftoVault</h1>
-		<p class="text-gray-400">Sign in with GitHub to access your vaults</p>
+		<p class="text-gray-400">Sign in to access your vaults</p>
 	</div>
 
-	<div class="space-y-6">
+	<form on:submit|preventDefault={handleLogin} class="space-y-6">
+		<div>
+			<label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+				Email
+			</label>
+			<input
+				id="email"
+				type="email"
+				bind:value={email}
+				class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+				placeholder="Enter your email"
+				required
+				disabled={loading}
+			/>
+		</div>
+
+		<div>
+			<label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+				Password
+			</label>
+			<input
+				id="password"
+				type="password"
+				bind:value={password}
+				class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+				placeholder="Enter your password"
+				required
+				disabled={loading}
+			/>
+		</div>
+
 		<Button 
-			onclick={handleGitHubLogin}
+			type="submit"
 			variant="primary" 
 			size="lg" 
-			class="w-full flex items-center justify-center gap-3"
+			class="w-full"
 			disabled={loading}
 		>
-			<Github class="w-5 h-5" />
-			{loading ? 'Signing in...' : 'Continue with GitHub'}
+			{loading ? 'Signing in...' : 'Sign In'}
 		</Button>
+	</form>
+
+	<div class="text-center mt-6">
+		<p class="text-gray-400">
+			Don't have an account?
+			<a href="/register" class="text-red-500 hover:text-red-400 ml-1">Sign up</a>
+		</p>
 	</div>
 
 	<div class="text-center mt-8">
