@@ -16,7 +16,7 @@
 	let username = $state('');
 	let bio = $state('');
 	let email = $state('');
-	let premium = $state(false);
+
 
 	// Redirect if not authenticated
 	$effect(() => {
@@ -41,7 +41,7 @@
 				profile = data;
 				username = data.username || '';
 				bio = data.bio || '';
-				premium = data.premium || false;
+
 			}
 		} catch (err) {
 			console.error('Unexpected error loading profile:', err);
@@ -63,7 +63,7 @@
 				user_id: $auth.user.id,
 				username: username.trim(),
 				bio: bio.trim() || null,
-				premium: premium
+
 			};
 
 			let result;
@@ -188,14 +188,7 @@
 						<p class="text-xs text-gray-500 mt-1">Optional: A brief description about yourself</p>
 					</div>
 
-					<!-- Premium Status -->
-					<div>
-						<label class="flex items-center space-x-3">
-							<input type="checkbox" bind:checked={premium} class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2" />
-							<span class="text-sm font-medium">Premium Account</span>
-						</label>
-						<p class="text-xs text-gray-500 mt-1">Premium users can create up to 5 vaults and 10 secrets per vault</p>
-					</div>
+
 				</div>
 
 				<div class="flex gap-3 mt-6">
