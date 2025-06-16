@@ -12,6 +12,9 @@
 	let resendCooldown = $state(0);
 	let intervalId;
 	let isVerified = $state(false);
+	let verificationCode = $state('');
+	let codeVerifying = $state(false);
+	let showCodeInput = $state(false);
 
 	onMount(() => {
 		// Get email from URL params or auth store
@@ -92,6 +95,57 @@
 	function goToLogin() {
 		goto('/login');
 	}
+
+	async function verifyCode() {
+		if (!email || !verificationCode || codeVerifying) return;
+
+		codeVerifying = true;
+		try {
+			const response = await fetch('/auth/v1/verify', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: email,
+					code: verificationCode
+				})
+			});
+
+			const result = await response.json();
+
+			if (response.ok && result.success) {
+				isVerified = true;
+				toastStore.add({
+					type: 'success',
+					message: 'Email verified successfully! Redirecting to dashboard...'
+				});
+				setTimeout(() => {
+					goto('/dashboard');
+				}, 2000);
+			} else {
+				toastStore.add({
+					type: 'error',
+					message: result.error || 'Invalid verification code'
+				});
+			}
+		} catch (error) {
+			console.error('Error verifying code:', error);
+			toastStore.add({
+				type: 'error',
+				message: 'Failed to verify code. Please try again.'
+			});
+		} finally {
+			codeVerifying = false;
+		}
+	}
+
+	function toggleCodeInput() {
+		showCodeInput = !showCodeInput;
+		if (!showCodeInput) {
+			verificationCode = '';
+		}
+	}
 </script>
 
 <svelte:head>
@@ -159,12 +213,66 @@
 			</div>
 		</div>
 
-		<div class="space-y-4">
+		<!-- Manual Verification Code Section -->
+		<div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6 mb-6">
+			<div class="mb-4">
+				<h3 class="font-medium text-white mb-2">Enter Verification Code</h3>
+				<p class="text-sm text-blue-400">
+					Enter the 6-digit verification code from your email for instant access.
+				</p>
+			</div>
+			
+			<div class="space-y-4">
+				<div>
+					<label for="verification-code" class="block text-sm font-medium text-gray-300 mb-2">
+						Verification Code
+					</label>
+					<input
+						id="verification-code"
+						type="text"
+						bind:value={verificationCode}
+						placeholder="Enter 6-digit code"
+						maxlength="6"
+						class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg tracking-widest"
+						on:keydown={(e) => {
+							if (e.key === 'Enter' && verificationCode.length === 6) {
+								verifyCode();
+							}
+						}}
+					/>
+				</div>
+				<Button 
+					on:click={verifyCode}
+					disabled={codeVerifying || !verificationCode || verificationCode.length !== 6}
+					class="w-full"
+					size="lg"
+				>
+					{#if codeVerifying}
+						Verifying...
+					{:else}
+						Verify Code
+					{/if}
+				</Button>
+			</div>
+		</div>
+
+		<!-- Alternative Options -->
+		<div class="relative my-8">
+			<div class="absolute inset-0 flex items-center">
+				<div class="w-full border-t border-gray-700"></div>
+			</div>
+			<div class="relative flex justify-center text-sm">
+				<span class="px-4 bg-black text-gray-400">Or use email link</span>
+			</div>
+		</div>
+
+		<div class="space-y-3">
 			<Button 
 				on:click={resendConfirmation}
 				disabled={resendLoading || resendCooldown > 0 || !email}
-				variant="outline"
+				variant="ghost"
 				class="w-full"
+				size="sm"
 			>
 				{#if resendLoading}
 					Sending...
@@ -179,6 +287,7 @@
 				on:click={goToLogin}
 				variant="ghost"
 				class="w-full"
+				size="sm"
 			>
 				Back to Login
 			</Button>
