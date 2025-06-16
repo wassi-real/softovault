@@ -22,12 +22,6 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [tailwindcss(), sveltekit()],
-		define: envWithProcessPrefix,
-		optimizeDeps: {
-			include: ['@supabase/ssr']
-		},
-		ssr: {
-			noExternal: ['@supabase/ssr']
-		}
+		define: envWithProcessPrefix
 	};
 });
